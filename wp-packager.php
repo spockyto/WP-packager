@@ -380,7 +380,13 @@ class WPP_Updater
             return $transient;
         }
 
-        $remote = $this->get_remote_data();
+        // Permitir forzar la comprobación vía URL para pruebas
+        if (isset($_GET['wpp_check'])) {
+            $remote = $this->get_remote_data();
+        } else {
+            $remote = $this->get_remote_data();
+        }
+
         $plugin_file = $this->slug . '/' . $this->slug . '.php';
 
         if ($remote && version_compare($this->current_version, $remote->version, '<')) {
@@ -390,16 +396,18 @@ class WPP_Updater
             $res->new_version = $remote->version;
             $res->tested = $remote->tested;
             $res->package = $remote->download_url;
+            $res->url = 'https://github.com/spockyto/WP-packager'; // Requerido para ver detalles
 
             $transient->response[$plugin_file] = $res;
+            unset($transient->no_update[$plugin_file]);
         } else {
-            // Forzar registro en 'no_update' para habilitar UI de auto-actualización
             $item = new stdClass();
             $item->slug = $this->slug;
             $item->plugin = $plugin_file;
             $item->new_version = $this->current_version;
             $item->package = '';
             $transient->no_update[$plugin_file] = $item;
+            unset($transient->response[$plugin_file]);
         }
 
         return $transient;
@@ -438,13 +446,22 @@ class WPP_Updater
 
     private function get_remote_data()
     {
-        $remote = wp_remote_get($this->update_url, [
-            'timeout' => 10,
+        // En local (WAMP), a veces GitHub falla por SSL, intentamos con verificación off si falla
+        $args = [
+            'timeout' => 15,
             'headers' => ['Accept' => 'application/json']
-        ]);
+        ];
 
-        if (!is_wp_error($remote) && isset($remote['response']['code']) && $remote['response']['code'] == 200 && !empty($remote['body'])) {
-            return json_decode($remote['body']);
+        $response = wp_remote_get($this->update_url, $args);
+
+        if (is_wp_error($response)) {
+            // Reintento sin SSL para entornos locales problemáticos
+            $args['sslverify'] = false;
+            $response = wp_remote_get($this->update_url, $args);
+        }
+
+        if (!is_wp_error($response) && wp_remote_retrieve_response_code($response) == 200) {
+            return json_decode(wp_remote_retrieve_body($response));
         }
 
         return false;

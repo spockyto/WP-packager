@@ -3,7 +3,7 @@
  * Plugin Name: WP Packager
  * Plugin URI: https://pacosalcedo.com/
  * Description: Install your favorite plugins in a chain from the official repository. Export and import configuration lists.
- * Version: 1.1.2
+ * Version: 1.1.3
  * Author: Paco Salcedo
  * Author URI: https://pacosalcedo.com
  * Text Domain: wp-packager

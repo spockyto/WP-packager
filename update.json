@@ -1,0 +1,10 @@
+{
+    "version": "1.1.1",
+    "tested": "6.4.2",
+    "last_updated": "2026-02-08 17:05:00",
+    "download_url": "https://github.com/spockyto/WP-packager/archive/refs/tags/v1.1.1.zip",
+    "sections": {
+        "description": "Install your favorite plugins in a chain from the official repository. Export and import configuration lists.",
+        "changelog": "<ul><li>Initial stable release v1.1.1</li><li>Two-column layout (Help on the right)</li><li>Numbered plugin table</li><li>Auto-update system via GitHub</li><li>Base language set to English with Spanish translation</li></ul>"
+    }
+}

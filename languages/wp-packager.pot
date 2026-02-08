@@ -1,0 +1,228 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Packager\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-08 16:19+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.8.1; wp-6.9.1; php-8.2.13\n"
+"X-Domain: wp-packager"
+
+#: wp-packager.php:56
+msgid " selected plugins..."
+msgstr ""
+
+#: wp-packager.php:113
+msgid "1. Your Plugin List"
+msgstr ""
+
+#: wp-packager.php:134
+msgid "2. Bulk Installation"
+msgstr ""
+
+#: wp-packager.php:179
+msgid "3. Currently Installed Plugins"
+msgstr ""
+
+#: wp-packager.php:217
+msgid "4. Export / Import"
+msgstr ""
+
+#: wp-packager.php:166
+msgid "Auto-activate plugins after installation"
+msgstr ""
+
+#: wp-packager.php:255
+msgid "Chain Installation"
+msgstr ""
+
+#: wp-packager.php:256
+msgid "Check the plugins and click \"Start\"."
+msgstr ""
+
+#: wp-packager.php:61
+msgid "Completed"
+msgstr ""
+
+#: wp-packager.php:324
+msgid "Completed: Installed (activation attempted via fallback)."
+msgstr ""
+
+#: wp-packager.php:328
+msgid "Completed: Installed (manual activation required)."
+msgstr ""
+
+#: wp-packager.php:319
+msgid "Completed: Installed and Activated."
+msgstr ""
+
+#: wp-packager.php:101
+#, php-format
+msgid "Configuration has been automatically loaded from %s."
+msgstr ""
+
+#: wp-packager.php:108
+msgid "Define your essential plugins and install them in a chain."
+msgstr ""
+
+#: wp-packager.php:52
+msgid "Do you want to add the current plugins to the end of your list?"
+msgstr ""
+
+#: wp-packager.php:118
+msgid "Enter the slugs separated by commas."
+msgstr ""
+
+#: wp-packager.php:62
+msgid "Error"
+msgstr ""
+
+#: wp-packager.php:258
+msgid "Export your list to JSON and use it on other sites."
+msgstr ""
+
+#: wp-packager.php:249
+msgid "Follow these steps to set up your perfect installation in seconds:"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://pacosalcedo.com"
+msgstr ""
+
+#. Description of the plugin
+msgid ""
+"Install your favorite plugins in a chain from the official repository. "
+"Export and import configuration lists."
+msgstr ""
+
+#: wp-packager.php:317
+#, php-format
+msgid "Installed but failed to activate: %s"
+msgstr ""
+
+#: wp-packager.php:59
+msgid "Installing..."
+msgstr ""
+
+#: wp-packager.php:127
+msgid "List saved."
+msgstr ""
+
+#: wp-packager.php:261
+msgid ""
+"Note: Save your JSON file as <code>wp-packager-export.json</code> in the "
+"plugin folder for automatic loading."
+msgstr ""
+
+#: wp-packager.php:252
+msgid "Official Slugs"
+msgstr ""
+
+#. Author of the plugin
+msgid "Paco Salcedo"
+msgstr ""
+
+#: wp-packager.php:53
+msgid "Please select at least one plugin to install."
+msgstr ""
+
+#: wp-packager.php:144
+msgid "Plugin (Slug)"
+msgstr ""
+
+#: wp-packager.php:284
+msgid "Plugin not found in the repository."
+msgstr ""
+
+#: wp-packager.php:257
+msgid "Portability"
+msgstr ""
+
+#: wp-packager.php:119
+msgid "Save List"
+msgstr ""
+
+#: wp-packager.php:253
+msgid ""
+"Search for the plugin on WordPress.org. The \"slug\" is the last part of the "
+"URL."
+msgstr ""
+
+#: wp-packager.php:145
+msgid "Status"
+msgstr ""
+
+#: wp-packager.php:137
+msgid "There are no plugins in the list."
+msgstr ""
+
+#: wp-packager.php:181
+msgid ""
+"These are the plugins you currently have. You can copy them to your "
+"favorites list."
+msgstr ""
+
+#: wp-packager.php:157
+msgid "Waiting..."
+msgstr ""
+
+#: wp-packager.php:174
+msgid "Welcome to WP Packager. Click the button above to start."
+msgstr ""
+
+#. Name of the plugin
+#: wp-packager.php:107
+msgid "WP Packager"
+msgstr ""
+
+#: wp-packager.php:274
+msgid "You do not have permissions."
+msgstr ""
+
+#: wp-packager.php:54
+msgid "⏳ Installing..."
+msgstr ""
+
+#: wp-packager.php:57
+msgid "✅ Finished!"
+msgstr ""
+
+#: wp-packager.php:222
+msgid "⬆️ Import JSON"
+msgstr ""
+
+#: wp-packager.php:220
+msgid "⬇️ Export JSON"
+msgstr ""
+
+#: wp-packager.php:58
+msgid "🎉 The selected plugins have been processed."
+msgstr ""
+
+#: wp-packager.php:55
+msgid "🏁 Starting installation of "
+msgstr ""
+
+#: wp-packager.php:200
+msgid "📋 Load current Slugs into the list"
+msgstr ""
+
+#: wp-packager.php:248
+msgid "📖 Quick Start Guide"
+msgstr ""
+
+#: wp-packager.php:60
+msgid "🔄 Processing: "
+msgstr ""
+
+#: wp-packager.php:169
+msgid "🚀 Start Selected Installation"
+msgstr ""

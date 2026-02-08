@@ -1,0 +1,175 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Packager 1.1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-08 17:15+0100\n"
+"PO-Revision-Date: 2026-02-08 16:23+0000\n"
+"Last-Translator: \n"
+"Language-Team: Español\n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Domain: wp-packager\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Loco-Version: 2.8.1; wp-6.9.1; php-8.2.13"
+
+msgid ""
+"Install your favorite plugins in a chain from the official repository. "
+"Export and import configuration lists."
+msgstr ""
+"Instala tus plugins favoritos en cadena desde el repositorio oficial. "
+"Exporta e importa listas de configuración."
+
+msgid "Do you want to add the current plugins to the end of your list?"
+msgstr "¿Quieres añadir los plugins actuales al final de tu lista?"
+
+msgid "Please select at least one plugin to install."
+msgstr "Por favor, selecciona al menos un plugin para instalar."
+
+msgid "⏳ Installing..."
+msgstr "⏳ Instalando..."
+
+msgid "🏁 Starting installation of "
+msgstr "🏁 Iniciando instalación de "
+
+msgid " selected plugins..."
+msgstr " plugins seleccionados..."
+
+msgid "✅ Finished!"
+msgstr "✅ ¡Finalizado!"
+
+msgid "🎉 The selected plugins have been processed."
+msgstr "🎉 Los plugins seleccionados han sido procesados."
+
+msgid "Installing..."
+msgstr "Instalando..."
+
+msgid "🔄 Processing: "
+msgstr "🔄 Procesando: "
+
+msgid "Completed"
+msgstr "Completado"
+
+msgid "Error"
+msgstr "Error"
+
+msgid "Configuration has been automatically loaded from %s."
+msgstr "Se ha cargado automáticamente la configuración desde %s."
+
+msgid "WP Packager"
+msgstr "WP Packager"
+
+msgid "Define your essential plugins and install them in a chain."
+msgstr "Define tus plugins imprescindibles e instálalos en cadena."
+
+msgid "1. Your Plugin List"
+msgstr "1. Tu Lista de Plugins"
+
+msgid "Enter the slugs separated by commas."
+msgstr "Introduce los slugs separados por comas."
+
+msgid "Save List"
+msgstr "Guardar Lista"
+
+msgid "List saved."
+msgstr "Lista guardada."
+
+msgid "2. Bulk Installation"
+msgstr "2. Instalación en Lote"
+
+msgid "There are no plugins in the list."
+msgstr "No hay plugins en la lista."
+
+msgid "Plugin (Slug)"
+msgstr "Plugin (Slug)"
+
+msgid "Status"
+msgstr "Estado"
+
+msgid "Waiting..."
+msgstr "Esperando..."
+
+msgid "Auto-activate plugins after installation"
+msgstr "Auto-activar plugins tras instalar"
+
+msgid "🚀 Start Selected Installation"
+msgstr "🚀 Iniciar Instalación Seleccionada"
+
+msgid "Welcome to WP Packager. Click the button above to start."
+msgstr "Bienvenido a WP Packager. Haz clic en el botón superior para empezar."
+
+msgid "3. Currently Installed Plugins"
+msgstr "3. Plugins Instalados Actualmente"
+
+msgid ""
+"These are the plugins you currently have. You can copy them to your "
+"favorites list."
+msgstr ""
+"Estos son los plugins que tienes ahora mismo. Puedes copiarlos a tu lista de "
+"favoritos."
+
+msgid "📋 Load current Slugs into the list"
+msgstr "📋 Cargar Slugs actuales en la lista"
+
+msgid "4. Export / Import"
+msgstr "4. Exportar / Importar"
+
+msgid "⬇️ Export JSON"
+msgstr "⬇️ Exportar JSON"
+
+msgid "⬆️ Import JSON"
+msgstr "⬆️ Importar JSON"
+
+msgid "📖 Quick Start Guide"
+msgstr "📖 Guía de Uso Rápido"
+
+msgid "Follow these steps to set up your perfect installation in seconds:"
+msgstr "Sigue estos pasos para configurar tu instalación perfecta en segundos:"
+
+msgid "Official Slugs"
+msgstr "Slugs Oficiales"
+
+msgid ""
+"Search for the plugin on WordPress.org. The \"slug\" is the last part of the "
+"URL."
+msgstr ""
+"Busca el plugin en WordPress.org. El \"slug\" es la parte final de la URL."
+
+msgid "Chain Installation"
+msgstr "Instalación en Cadena"
+
+msgid "Check the plugins and click \"Start\"."
+msgstr "Marca los plugins y haz clic en \"Iniciar\"."
+
+msgid "Portability"
+msgstr "Portabilidad"
+
+msgid "Export your list to JSON and use it on other sites."
+msgstr "Exporta tu lista a JSON y úsala en otros sitios."
+
+msgid ""
+"Note: Save your JSON file as <code>wp-packager-export.json</code> en la "
+"carpeta del plugin para carga automática."
+msgstr ""
+"Nota: Guarda tu archivo JSON como <code>wp-packager-export.json</code> en la "
+"carpeta del plugin para carga automática."
+
+msgid "You do not have permissions."
+msgstr "No tienes permisos."
+
+msgid "Plugin not found in the repository."
+msgstr "Plugin no encontrado en el repositorio."
+
+msgid "Installed but failed to activate: %s"
+msgstr "Instalado pero falló al activar: %s"
+
+msgid "Completed: Installed and Activated."
+msgstr "Completado: Instalado y Activado."
+
+msgid "Completed: Installed (activation attempted via fallback)."
+msgstr "Completado: Instalado (activación intentada vía fallback)."
+
+msgid "Completed: Installed (manual activation required)."
+msgstr "Completado: Instalado (activación manual requerida)."

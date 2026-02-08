@@ -382,6 +382,7 @@ class WPP_Updater
 
         // Permitir forzar la comprobación vía URL para pruebas
         if (isset($_GET['wpp_check'])) {
+            delete_site_transient('update_plugins'); // Borramos para forzar recarga limpia
             $remote = $this->get_remote_data();
         } else {
             $remote = $this->get_remote_data();

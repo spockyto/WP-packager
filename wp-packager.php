@@ -1,11 +1,16 @@
 <?php
 /**
  * Plugin Name: WP Packager
+ * Plugin URI: https://pacosalcedo.com/
  * Description: Install your favorite plugins in a chain from the official repository. Export and import configuration lists.
- * Version: 1.1.1
+ * Version: 1.1.2
  * Author: Paco Salcedo
  * Author URI: https://pacosalcedo.com
  * Text Domain: wp-packager
+ * License: GPL v2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Requires at least: 6.7
+ * Requires PHP: 7.4
  */
 
 if (!defined('ABSPATH')) {
@@ -433,6 +438,6 @@ add_action('wp_ajax_wpp_export', function () {
 new WP_Packager();
 new WPP_Updater(
     'wp-packager',
-    '1.1.1',
+    '1.1.2',
     'https://raw.githubusercontent.com/spockyto/WP-packager/main/update.json'
 );

@@ -3,7 +3,7 @@
  * Plugin Name: WP Packager
  * Plugin URI: https://pacosalcedo.com/
  * Description: Install your favorite plugins in a chain from the official repository. Export and import configuration lists.
- * Version: 1.1.3
+ * Version: 1.2.0
  * Author: Paco Salcedo
  * Author URI: https://pacosalcedo.com
  * Text Domain: wp-packager
@@ -25,6 +25,141 @@ class WP_Packager
         add_action('admin_menu', [$this, 'add_menu']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_assets']);
         add_action('wp_ajax_wpp_install_plugin', [$this, 'ajax_install_plugin']);
+
+        // Migrar datos antiguos si es necesario
+        $this->migrate_legacy_list();
+    }
+
+    // ==================== PRESET MANAGEMENT ====================
+
+    private function migrate_legacy_list()
+    {
+        $legacy = get_option('wpp_plugin_list', null);
+        $presets = get_option('wpp_presets', null);
+
+        if ($legacy !== null && $presets === null && !empty($legacy)) {
+            $preset_id = uniqid('preset_');
+            $new_presets = [
+                $preset_id => [
+                    'name' => __('My Original List', 'wp-packager'),
+                    'plugins' => $legacy
+                ]
+            ];
+            update_option('wpp_presets', $new_presets);
+            update_option('wpp_active_preset', $preset_id);
+            delete_option('wpp_plugin_list');
+        }
+
+        // Asegurar que siempre haya al menos un preset
+        if (empty(get_option('wpp_presets', []))) {
+            $this->create_preset();
+        }
+    }
+
+    private function get_presets()
+    {
+        return get_option('wpp_presets', []);
+    }
+
+    private function get_active_preset_id()
+    {
+        $active = get_option('wpp_active_preset', '');
+        $presets = $this->get_presets();
+        if (!isset($presets[$active]) && !empty($presets)) {
+            $active = array_key_first($presets);
+            update_option('wpp_active_preset', $active);
+        }
+        return $active;
+    }
+
+    private function get_active_preset()
+    {
+        $presets = $this->get_presets();
+        $active_id = $this->get_active_preset_id();
+        return $presets[$active_id] ?? ['name' => '', 'plugins' => []];
+    }
+
+    private function save_preset($id, $name, $plugins)
+    {
+        $presets = $this->get_presets();
+        $presets[$id] = [
+            'name' => sanitize_text_field($name),
+            'plugins' => array_filter(array_map('trim', $plugins))
+        ];
+        update_option('wpp_presets', $presets);
+    }
+
+    private function delete_preset($id)
+    {
+        $presets = $this->get_presets();
+        if (count($presets) <= 1) {
+            return false; // No eliminar el único preset
+        }
+        if (isset($presets[$id])) {
+            unset($presets[$id]);
+            update_option('wpp_presets', $presets);
+            // Si era el activo, cambiar al primero disponible
+            if ($this->get_active_preset_id() === $id) {
+                update_option('wpp_active_preset', array_key_first($presets));
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private function create_preset()
+    {
+        $presets = $this->get_presets();
+        $new_id = uniqid('preset_');
+        $count = count($presets) + 1;
+        $presets[$new_id] = [
+            'name' => sprintf(__('Package %d', 'wp-packager'), $count),
+            'plugins' => []
+        ];
+        update_option('wpp_presets', $presets);
+        update_option('wpp_active_preset', $new_id);
+        return $new_id;
+    }
+
+    private function set_active_preset($id)
+    {
+        $presets = $this->get_presets();
+        if (isset($presets[$id])) {
+            update_option('wpp_active_preset', $id);
+            return true;
+        }
+        return false;
+    }
+
+    private function handle_preset_actions()
+    {
+        // Cambiar preset activo
+        if (isset($_POST['wpp_preset_select']) && wp_verify_nonce($_POST['wpp_switch_nonce'] ?? '', 'wpp_switch_preset')) {
+            $this->set_active_preset(sanitize_text_field($_POST['wpp_preset_select']));
+        }
+
+        // Guardar preset actual
+        if (isset($_POST['save_preset']) && wp_verify_nonce($_POST['wpp_save_nonce'] ?? '', 'wpp_save_preset')) {
+            $id = sanitize_text_field($_POST['preset_id'] ?? '');
+            $name = sanitize_text_field($_POST['wpp_preset_name'] ?? '');
+            $slugs = array_map('trim', explode(',', sanitize_textarea_field($_POST['wpp_slugs'] ?? '')));
+            $this->save_preset($id, $name, $slugs);
+            echo '<div class="notice notice-success is-dismissible"><p>' . __('Package saved successfully.', 'wp-packager') . '</p></div>';
+        }
+
+        // Nuevo preset
+        if (isset($_POST['new_preset']) && wp_verify_nonce($_POST['wpp_save_nonce'] ?? '', 'wpp_save_preset')) {
+            $this->create_preset();
+            echo '<div class="notice notice-success is-dismissible"><p>' . __('New package created.', 'wp-packager') . '</p></div>';
+        }
+
+        // Eliminar preset
+        if (isset($_POST['delete_preset']) && wp_verify_nonce($_POST['wpp_save_nonce'] ?? '', 'wpp_save_preset')) {
+            $id = sanitize_text_field($_POST['preset_id'] ?? '');
+            if ($this->delete_preset($id)) {
+                echo '<div class="notice notice-warning is-dismissible"><p>' . __('Package deleted.', 'wp-packager') . '</p></div>';
+            }
+        }
     }
 
     public function load_textdomain()
@@ -92,47 +227,74 @@ class WP_Packager
 
     public function render_page()
     {
-        $plugins = get_option('wpp_plugin_list', []);
+        // Procesar acciones POST antes de renderizar
+        $this->handle_preset_actions();
 
-        // Autocargar si la lista está vacía y existe el archivo por defecto
-        if (empty($plugins)) {
-            $default_file = plugin_dir_path(__FILE__) . 'wp-packager-export.json';
-            if (file_exists($default_file)) {
-                $content = file_get_contents($default_file);
-                $data = json_decode($content, true);
-                if (isset($data['plugins']) && is_array($data['plugins'])) {
-                    update_option('wpp_plugin_list', $data['plugins']);
-                    $plugins = $data['plugins'];
-                    echo '<div class="notice notice-info is-dismissible"><p>' . sprintf(__('Configuration has been automatically loaded from %s.', 'wp-packager'), '<code>wp-packager-export.json</code>') . '</p></div>';
-                }
-            }
-        }
+        // Obtener datos de presets
+        $presets = $this->get_presets();
+        $active_id = $this->get_active_preset_id();
+        $active_preset = $this->get_active_preset();
+        $plugins = $active_preset['plugins'] ?? [];
         ?>
         <div class="wrap">
-            <h1><?php _e('WP Packager', 'wp-packager'); ?> <small>v1.1.1</small></h1>
+            <h1><?php _e('WP Packager', 'wp-packager'); ?> <small>v1.2.0</small></h1>
             <p><?php _e('Define your essential plugins and install them in a chain.', 'wp-packager'); ?></p>
 
             <div class="wpp-flex">
                 <div class="wpp-main-col">
                     <div class="wpp-container">
-                        <h2><?php _e('1. Your Plugin List', 'wp-packager'); ?></h2>
-                        <form method="post" action="">
-                            <?php wp_nonce_field('wpp_save_list', 'wpp_save_nonce'); ?>
-                            <textarea name="wpp_slugs" rows="5" style="width: 100%;"
-                                placeholder="Example: updraftplus, filebird, rank-math-seo"><?php echo esc_textarea(implode(', ', $plugins)); ?></textarea>
-                            <p class="description"><?php _e('Enter the slugs separated by commas.', 'wp-packager'); ?></p>
-                            <?php submit_button(__('Save List', 'wp-packager'), 'primary', 'save_wpp_list'); ?>
+                        <h2><?php _e('1. Package/Preset Management', 'wp-packager'); ?></h2>
+
+                        <!-- Selector de Preset -->
+                        <form method="post" action="" style="margin-bottom: 15px;">
+                            <?php wp_nonce_field('wpp_switch_preset', 'wpp_switch_nonce'); ?>
+                            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                                <label
+                                    for="wpp_preset_select"><strong><?php _e('Active Package:', 'wp-packager'); ?></strong></label>
+                                <select name="wpp_preset_select" id="wpp_preset_select" onchange="this.form.submit()"
+                                    style="min-width: 200px;">
+                                    <?php foreach ($presets as $id => $preset): ?>
+                                        <option value="<?php echo esc_attr($id); ?>" <?php selected($id, $active_id); ?>>
+                                            <?php echo esc_html($preset['name']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <input type="hidden" name="action" value="switch_preset">
+                            </div>
                         </form>
 
-                        <?php
-                        if (isset($_POST['save_wpp_list']) && check_admin_referer('wpp_save_list', 'wpp_save_nonce')) {
-                            $slugs = array_map('trim', explode(',', sanitize_text_field($_POST['wpp_slugs'])));
-                            $slugs = array_filter($slugs);
-                            update_option('wpp_plugin_list', $slugs);
-                            echo '<div class="updated"><p>' . __('List saved.', 'wp-packager') . '</p></div>';
-                            $plugins = $slugs;
-                        }
-                        ?>
+                        <!-- Formulario de Edición del Preset Activo -->
+                        <form method="post" action="">
+                            <?php wp_nonce_field('wpp_save_preset', 'wpp_save_nonce'); ?>
+                            <input type="hidden" name="preset_id" value="<?php echo esc_attr($active_id); ?>">
+
+                            <p>
+                                <label
+                                    for="wpp_preset_name"><strong><?php _e('Package Name:', 'wp-packager'); ?></strong></label><br>
+                                <input type="text" name="wpp_preset_name" id="wpp_preset_name"
+                                    value="<?php echo esc_attr($active_preset['name']); ?>"
+                                    style="width: 100%; max-width: 400px;">
+                            </p>
+
+                            <p>
+                                <label for="wpp_slugs"><strong><?php _e('Plugins:', 'wp-packager'); ?></strong></label><br>
+                                <textarea name="wpp_slugs" id="wpp_slugs" rows="5" style="width: 100%;"
+                                    placeholder="Example: updraftplus, filebird, rank-math-seo"><?php echo esc_textarea(implode(', ', $plugins)); ?></textarea>
+                            </p>
+                            <p class="description"><?php _e('Enter the slugs separated by commas.', 'wp-packager'); ?></p>
+
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+                                <?php submit_button(__('💾 Save Package', 'wp-packager'), 'primary', 'save_preset', false); ?>
+                                <button type="submit" name="new_preset" class="button button-secondary">➕
+                                    <?php _e('New Package', 'wp-packager'); ?></button>
+                                <?php if (count($presets) > 1): ?>
+                                    <button type="submit" name="delete_preset" class="button" style="color: #d63638;"
+                                        onclick="return confirm('<?php esc_attr_e('Are you sure you want to delete this package?', 'wp-packager'); ?>');">
+                                        🗑️ <?php _e('Delete', 'wp-packager'); ?>
+                                    </button>
+                                <?php endif; ?>
+                            </div>
+                        </form>
 
                         <hr>
 
@@ -511,12 +673,20 @@ class WPP_Updater
 add_action('wp_ajax_wpp_export', function () {
     if (!check_admin_referer('wpp_export', 'nonce'))
         exit;
-    $plugins = get_option('wpp_plugin_list', []);
-    $data = ['plugins' => $plugins];
+
+    // Obtener el preset activo
+    $presets = get_option('wpp_presets', []);
+    $active_id = get_option('wpp_active_preset', '');
+    $active_preset = $presets[$active_id] ?? ['name' => 'Default', 'plugins' => []];
+
+    $data = [
+        'name' => $active_preset['name'],
+        'plugins' => $active_preset['plugins']
+    ];
 
     header('Content-Type: application/json');
-    header('Content-Disposition: attachment; filename="wp-packager-export.json"');
-    echo json_encode($data);
+    header('Content-Disposition: attachment; filename="wp-packager-' . sanitize_file_name($active_preset['name']) . '.json"');
+    echo json_encode($data, JSON_PRETTY_PRINT);
     exit;
 });
 
@@ -524,6 +694,6 @@ add_action('wp_ajax_wpp_export', function () {
 new WP_Packager();
 new WPP_Updater(
     'wp-packager',
-    '1.1.2',
+    '1.2.0',
     'https://raw.githubusercontent.com/spockyto/WP-packager/main/update.json'
 );

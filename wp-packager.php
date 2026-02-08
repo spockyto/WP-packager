@@ -490,12 +490,13 @@ class WPP_Updater
             'headers' => ['Accept' => 'application/json']
         ];
 
-        $response = wp_remote_get($this->update_url, $args);
+        $url = add_query_arg('t', time(), $this->update_url);
+        $response = wp_remote_get($url, $args);
 
         if (is_wp_error($response)) {
             // Reintento sin SSL para entornos locales problemáticos
             $args['sslverify'] = false;
-            $response = wp_remote_get($this->update_url, $args);
+            $response = wp_remote_get(add_query_arg('t', time(), $this->update_url), $args);
         }
 
         if (!is_wp_error($response) && wp_remote_retrieve_response_code($response) == 200) {

@@ -1,0 +1,25 @@
+# WordPress
+wp-config.php
+wp-content/uploads/
+wp-content/upgrade/
+wp-content/cache/
+
+# Loco Translate Backups
+languages/*.po~
+languages/*.mo~
+languages/*.l10n.php
+
+# PHP
+composer.lock
+vendor/
+.phpunit.result.cache
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+.gemini/
+*.log

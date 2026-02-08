@@ -354,15 +354,24 @@ class WPP_Updater
 
         // Habilitar el enlace de "Activar actualizaciones automáticas" en la lista de plugins
         add_filter('auto_update_plugin', [$this, 'should_auto_update'], 10, 2);
+        add_filter('plugin_auto_update_setting_html', [$this, 'auto_update_setting_html'], 10, 3);
     }
 
     public function should_auto_update($update, $item)
     {
-        // Si es nuestro plugin, permitimos que WordPress gestione la opción de auto-update
         if (isset($item->slug) && $item->slug === $this->slug) {
             return true;
         }
         return $update;
+    }
+
+    public function auto_update_setting_html($html, $plugin_file, $plugin_data)
+    {
+        if ($this->slug . '/' . $this->slug . '.php' === $plugin_file) {
+            // Permitir que WordPress muestre el enlace estándar
+            return $html;
+        }
+        return $html;
     }
 
     public function check_update($transient)
@@ -372,16 +381,25 @@ class WPP_Updater
         }
 
         $remote = $this->get_remote_data();
+        $plugin_file = $this->slug . '/' . $this->slug . '.php';
 
         if ($remote && version_compare($this->current_version, $remote->version, '<')) {
             $res = new stdClass();
             $res->slug = $this->slug;
-            $res->plugin = $this->slug . '/' . $this->slug . '.php';
+            $res->plugin = $plugin_file;
             $res->new_version = $remote->version;
             $res->tested = $remote->tested;
             $res->package = $remote->download_url;
 
-            $transient->response[$res->plugin] = $res;
+            $transient->response[$plugin_file] = $res;
+        } else {
+            // Forzar registro en 'no_update' para habilitar UI de auto-actualización
+            $item = new stdClass();
+            $item->slug = $this->slug;
+            $item->plugin = $plugin_file;
+            $item->new_version = $this->current_version;
+            $item->package = '';
+            $transient->no_update[$plugin_file] = $item;
         }
 
         return $transient;

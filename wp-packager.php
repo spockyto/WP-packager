@@ -355,6 +355,34 @@ class WPP_Updater
         // Habilitar el enlace de "Activar actualizaciones automáticas" en la lista de plugins
         add_filter('auto_update_plugin', [$this, 'should_auto_update'], 10, 2);
         add_filter('plugin_auto_update_setting_html', [$this, 'auto_update_setting_html'], 10, 3);
+
+        // Corregir la estructura de carpetas de GitHub tras la instalación
+        add_filter('upgrader_post_install', [$this, 'correct_folder_name'], 10, 3);
+    }
+
+    public function correct_folder_name($response, $hook_extra, $result)
+    {
+        global $wp_filesystem;
+
+        // Solo actuar si es nuestro plugin
+        if (!isset($hook_extra['plugin']) || $hook_extra['plugin'] !== $this->slug . '/' . $this->slug . '.php') {
+            return $response;
+        }
+
+        $install_directory = plugin_dir_path(dirname(__FILE__)); // wp-content/plugins/
+        $destination = $install_directory . $this->slug;
+        $source = $result['destination'];
+
+        if ($source !== $destination && $wp_filesystem->exists($source)) {
+            // Si el nombre descargado no coincide con el slug (común en GitHub), lo renombramos
+            if ($wp_filesystem->exists($destination)) {
+                $wp_filesystem->delete($destination, true);
+            }
+            $wp_filesystem->move($source, $destination);
+            $result['destination'] = $destination;
+        }
+
+        return $result;
     }
 
     public function should_auto_update($update, $item)

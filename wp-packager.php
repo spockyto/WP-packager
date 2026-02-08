@@ -351,6 +351,18 @@ class WPP_Updater
 
         add_filter('site_transient_update_plugins', [$this, 'check_update']);
         add_filter('plugins_api', [$this, 'plugin_info'], 20, 3);
+
+        // Habilitar el enlace de "Activar actualizaciones automáticas" en la lista de plugins
+        add_filter('auto_update_plugin', [$this, 'should_auto_update'], 10, 2);
+    }
+
+    public function should_auto_update($update, $item)
+    {
+        // Si es nuestro plugin, permitimos que WordPress gestione la opción de auto-update
+        if (isset($item->slug) && $item->slug === $this->slug) {
+            return true;
+        }
+        return $update;
     }
 
     public function check_update($transient)

@@ -1,10 +1,10 @@
 {
-    "version": "1.1.2",
+    "version": "1.1.3",
     "tested": "6.7",
-    "last_updated": "2026-02-08 17:59:00",
+    "last_updated": "2026-02-08 18:05:00",
     "download_url": "https://github.com/spockyto/WP-packager/archive/refs/tags/v1.1.2.zip",
     "sections": {
         "description": "Install your favorite plugins in a chain from the official repository. Export and import configuration lists.",
-        "changelog": "<ul><li>Version 1.1.2</li><li>Stable state restored after Windows file lock issues.</li></ul>"
+        "changelog": "<ul><li>Version 1.1.3 (Final Fix Test)</li><li>Fixed Windows file lock issues using pre-install deactivation</li><li>Normalized GitHub source folder selection</li></ul>"
     }
 }

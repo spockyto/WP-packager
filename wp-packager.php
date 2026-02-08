@@ -356,33 +356,42 @@ class WPP_Updater
         add_filter('auto_update_plugin', [$this, 'should_auto_update'], 10, 2);
         add_filter('plugin_auto_update_setting_html', [$this, 'auto_update_setting_html'], 10, 3);
 
-        // Corregir la estructura de carpetas de GitHub tras la instalación
-        add_filter('upgrader_post_install', [$this, 'correct_folder_name'], 10, 3);
+        // Normalizar la fuente del ZIP de GitHub antes de la instalación
+        add_filter('upgrader_source_selection', [$this, 'normalize_source_directory'], 10, 4);
+
+        // Desactivar el plugin temporalmente antes de la instalación para evitar bloqueos de archivos en Windows
+        add_filter('upgrader_pre_install', [$this, 'deactivate_before_install'], 10, 2);
     }
 
-    public function correct_folder_name($response, $hook_extra, $result)
+    public function deactivate_before_install($response, $hook_extra)
+    {
+        if (isset($hook_extra['plugin']) && $hook_extra['plugin'] === $this->slug . '/' . $this->slug . '.php') {
+            deactivate_plugins($hook_extra['plugin']);
+        }
+        return $response;
+    }
+
+    public function normalize_source_directory($source, $remote_source, $upgrader, $hook_extra)
     {
         global $wp_filesystem;
 
         // Solo actuar si es nuestro plugin
         if (!isset($hook_extra['plugin']) || $hook_extra['plugin'] !== $this->slug . '/' . $this->slug . '.php') {
-            return $response;
+            return $source;
         }
 
-        $install_directory = plugin_dir_path(dirname(__FILE__)); // wp-content/plugins/
-        $destination = $install_directory . $this->slug;
-        $source = $result['destination'];
+        $source_path = untrailingslashit($source);
+        $remote_source_path = untrailingslashit($remote_source);
+        $corrected_source = trailingslashit($remote_source_path) . $this->slug;
 
-        if ($source !== $destination && $wp_filesystem->exists($source)) {
-            // Si el nombre descargado no coincide con el slug (común en GitHub), lo renombramos
-            if ($wp_filesystem->exists($destination)) {
-                $wp_filesystem->delete($destination, true);
+        if ($source_path !== $corrected_source) {
+            if ($wp_filesystem->exists($corrected_source)) {
+                $wp_filesystem->delete($corrected_source, true);
             }
-            $wp_filesystem->move($source, $destination);
-            $result['destination'] = $destination;
+            $wp_filesystem->move($source, $corrected_source);
         }
 
-        return $result;
+        return trailingslashit($corrected_source);
     }
 
     public function should_auto_update($update, $item)
